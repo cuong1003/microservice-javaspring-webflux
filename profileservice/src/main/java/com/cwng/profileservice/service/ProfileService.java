@@ -2,12 +2,14 @@ package com.cwng.profileservice.service;
 
 import com.cwng.profileservice.model.ProfileDTO;
 import com.cwng.profileservice.repository.ProfileRepository;
-import lombok.extern.log4j.Log4j2;
+import com.cwng.profileservice.utils.Constant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class ProfileService {
 
@@ -23,6 +25,23 @@ public class ProfileService {
         return profileRepository.findByEmail(email)
                 .flatMap( x -> Mono.just(true) )
                 .switchIfEmpty(Mono.just(false));
+    }
+
+    public Mono<ProfileDTO> createNewProfile(ProfileDTO profileDTO){
+        return checkDuplicate(profileDTO.getEmail())
+                .flatMap( x -> {
+                    if (Boolean.TRUE.equals(x)) {
+                        return Mono.error(new Exception("Profile already exists"));
+                    } else {
+                        profileDTO.setStatus(Constant.STATUS_PROFILE_PENDING);
+                        return Mono.just(profileDTO)
+                                .map(ProfileDTO::dtoToEntity)
+                                .flatMap( profileRepository::save)
+                                .map(ProfileDTO::entityToDto)
+                                .doOnError(throwable -> log.error(throwable.getMessage()))
+                                .doOnSuccess( dto -> log.info("Profile created successfully"));
+                    }
+                });
     }
 
 }

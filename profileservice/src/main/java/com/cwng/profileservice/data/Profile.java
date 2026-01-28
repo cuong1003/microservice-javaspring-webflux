@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table
 public class Profile {
     @Id
-    private long id;
+    private Long id;
     private String email;
     private String name;
     private String status;
