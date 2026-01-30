@@ -1,10 +1,10 @@
-package com.cwng.profileservice;
+package com.cwng.commonservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProfileserviceApplicationTests {
+class CommonserviceApplicationTests {
 
 	@Test
 	void contextLoads() {
